@@ -10,7 +10,7 @@ Students are expected to:
 Student Info
 =======================
 
-* Name: *YourNameHere*
-* ID: *YourIdHere*
+* Name: Nguyen Xuan Minh Vu
+* ID: BI12-497
 * Group ID: *Your Group ID here*
 
