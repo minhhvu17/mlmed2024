@@ -1,0 +1,123 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\title{ECG Heartbeat Classification}
+\author{Nguyen Xuan Minh Vu}
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+The heart is the main organ in the circulatory system, which is one of the most vital parts of the lives of living creatures. Its mission is to pump blood throughout the body. This process brings oxygen and nutrients to every part of the body and also takes away waste from other organs. 
+
+The heartbeat refers to the pulsation of the heart muscle, which is responsible for pumping blood throughout the body. It consists of a two-part pumping action: first, the heart collects the blood coming back from the body in the upper chambers and sends out an electrical signal to push it into the resting lower chambers. The second action occurs when the lower chambers are full of blood. The valve is open for oxygen-rich blood to flow through the body. This cycle is happening again and again in creatures' lives, each of which makes up a heartbeat. Heartbeat rates depend on many factors, including age, physical state, and diseases, ...
+
+In the clinical field, heartbeat effectively diagnoses diseases as heart rates reflect people's health conditions. For adults, the resting pulse rate is from 60 to 100 beats per minute (bpm). A heart rate is considered high when it is above 100, while a heart rate less than 60 (except for athletes or regularly exercised people) is considered slow. Too low or too high heart rate can cause many consequences to people's health like chest pain, dizziness, easily tiring, fatigue, fainting, shortness of breath,... or the worst case, it can cause a stroke. By analyzing the heartbeat, doctors can indicate the health state, early diagnose diseases, and treat their patients well and on time.
+
+Currently, with the developments in the field of technology, artificial intelligence (AI), and Big Data, people are allowed to store large datasets and to do the analysis and methods that require high computational cost. In the medical field, the applications of new technologies are wide, and one successful field is machine learning in medicine. Machine Learning is a branch of AI that makes use of data and algorithms to simulate the way humans learn in computers. It extracts features and patterns in the data to give an unbiased prediction or classification with remarkable speed and accuracy. Machine learning has proven to be effective in medicine like disease diagnosis, medical imaging, drug discovery, ...
+
+Specifically, we can utilize machine learning in heartbeat classification to predict and classify the patients into different categories representing different levels of heart conditions, and to consider whether the heart is normal or not. 
+
+% What other people do in ML for heartbeat Classification: survey
+
+In this project, I try to recreate a model for ECG analysis using deep neural networks which is simple and effective in heartbeat classification.
+
+\section{Background}
+\subsection{Electrocardiogram (ECG)} An electrocardiogram records the electrical signals in the heart. It's a common and painless test used to quickly detect heart problems and monitor the heart's health.
+\subsection{Convolutional Neural Network (CNN)} CNN excels at processing data like images, speech, and audio signals. This is due to their unique architecture composed of three main layer types:
+\begin{itemize}
+    \item \textbf{Convolution layers}: These layers are used to extract different levels of features in the image. The initial layers capture the low-level features (edge, corner, ...) and the deeper layers take the semantic information. \\
+    \item \textbf{Pooling layers}: These layers serve two main purposes. Firstly, they reduce the dimensionality of the data, making it computationally efficient for further processing. Secondly, they capture spatial invariance, meaning the network can recognize an object regardless of its minor position or size shifts.\\
+    \item \textbf{Fully-connected layers}: The final Fully-connected layers function similarly to a traditional neural network. This allows the network to combine the extracted features from earlier layers and make the final classification or prediction.
+\end{itemize}
+\section{Data Understanding}
+In the scale of this project, I use the PTB Diagnostic ECG Dataset from the Physionet's PTB Diagnostic Database, which contains 14552 samples, divided into two categories: 0 (normal) and 1 (abnormal). The sampling data is taken at the frequency 125Hz.\\
+The distribution of data has a disparity as the abnormal class outnumbers the normal one. There are 10506 samples for the abnormal class and 4046 for the normal class. There should be some methods to balance the two categories; hence, I cannot figure it out yet.
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\linewidth]{data_dist.png}
+    \caption{The distribution of dataset}
+    \label{fig:Pipeline}
+\end{figure}
+\mbox{}\\\\
+
+\section{Method}
+\subsection{CNN architecture}
+
+\begin{center}
+
+\begin{tabular}{||c c c c||}
+ \hline
+ Type & Output layer & Kernel size & Stride \\ [0.5ex] 
+ \hline\hline
+ Convolution & 156 x 3 & 32 & 1 \\ 
+ \hline
+ Max Pooling & 78 x 3 & 2 & 2 \\
+ \hline
+ Convolution & 63 x 10 & 16 & 1 \\
+ \hline
+ Max Pooling & 31 x 10 & 2 & 2 \\
+ \hline
+ Convolution & 24 x 10 & 8 & 1 \\
+ \hline
+ Max Pooling & 12 x 10 & 2 & 2 \\
+ \hline
+ Flatten & 120 x 1 & - & - \\
+ \hline
+ Fully-connected & 30 x 1 & - & - \\
+ \hline 
+ Fully-connected & 12 x 1 & - & - \\
+ \hline 
+ Fully-connected & 2 x 1 & - & - \\[1ex] 
+ \hline
+\end{tabular}
+\end{center}
+This model contains 10 layers including 3 convolution layers, separated by 3 Max-pool layers. Then it is flattened and gone through 3 full-connected layers.
+
+\subsection{Training}
+For training, I use the Adam optimizer algorithm with a learning rate equal to 0.0015 and use the cross-entropy loss function. The batch size is set as 64 in this work. The model runs through 150 epochs.
+\subsection{Data splitting}
+The dataset is divided into training set, validation set, and test set (63\%, 27\%, 10\% respectively).
+\section{Evaluation}
+\subsection{Metric}
+To evaluate this model, I calculate the accuracy, precision, recall, and confusion matrix as only the accuracy is inadequate to illustrate the efficiency of the model as there exists an imbalance in dataset distribution.
+\subsection{Result}
+The model learns quickly for the first 20 epochs as the loss reduces from around 0.6 to 0.4. For the next 130 epochs, it slows down the convergence and stops at 0.358 for the validation set and 0.349 for the train set. The loss process is shown in Fig. \ref{fig:Loss}.
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\linewidth]{loss.png}
+    \caption{Loss in train set and validation set after 150 epochs}
+    \label{fig:Loss}
+\end{figure}
+\mbox{}\\\\
+This work results in a 915.4\% accuracy model on the testing set. The precision and recall perform even better as they reach 96.4 and 97.3 \% respectively. The confusion matrix Fig. \ref{fig:cm} illustrates the goodness of the model.
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\linewidth]{confusion_matrix.png}
+    \caption{Confusion matrix}
+    \label{fig:cm}
+\end{figure}
+\mbox{}\\\\
+The TABLE \ref{compare} illustrates the efficiency of this model and some other models. We can see that this work shows a significantly good result with better efficiency.
+\begin{table}[h]
+\begin{center}
+\caption{Comparison this work with two other models}
+\label{compare}
+\begin{tabular}{||c c c c||} 
+
+ \hline
+ Work & Accuracy & Precision & Recall \\ [0.5ex] 
+ \hline\hline
+ This work & 95.4 & 96.4 & 97.3\\ 
+ \hline
+ Mohammad et al. & 95.9 & 95.2 & 95.1\\
+ \hline
+ Acharya et al. & 93.5 &92.8 & 93.7\\
+ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\section{Conclusion}
+In this project, I have proposed a convolutional neural network to diagnose the abnormal heartbeat in the PTB diagnosis dataset. This model is quite good as the results are superb, compared with the Deep Residual CNN method by Mohammad Kachuee et al. For future work, I will try to apply more complex architecture and imply balancing data techniques to improve the model's efficiency.
+\end{document}
